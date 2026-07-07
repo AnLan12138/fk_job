@@ -55,11 +55,16 @@ async function searchJobs(win, filter) {
   const jobs = await _extractJobList(win);
   logger.info('lagou', `提取到 ${jobs.length} 个职位`);
 
+  // ★ 缓存 job 列表
+  win._lagouJobs = jobs;
+  win._lagouSearchUrl = url;
+
   for (let page = 2; page <= 3; page++) {
     if (await _clickNextPage(win)) {
       await _sleep(1500);
       const more = await _extractJobList(win);
       jobs.push(...more);
+      win._lagouJobs = jobs;
     } else break;
   }
 
@@ -103,20 +108,75 @@ async function _clickNextPage(win) {
 // ═══════════════════════════════════════════════════════════════
 // 接口 3: applyOne — 弹窗表单
 // ═══════════════════════════════════════════════════════════════
-async function applyOne(win, job, resume) {
-  // 列表页点"投简历"
-  const btn = await selector.locate(win, 'lagou', 'apply', 'btn_apply', 3000);
-  if (btn.ok && btn.el) {
-    await _clickEl(win, btn.el);
+async function applyOne(win, job, resume, index) {
+  logger.info('lagou', `投递开始: ${job.company} - ${job.title}`);
+
+  const currentUrl = win.webContents.getURL();
+  if (win._lagouSearchUrl && !currentUrl.includes('/list_')) {
+    await browser.loadURL(win, win._lagouSearchUrl, 15000);
     await _sleep(2000);
-  } else if (job.url) {
-    await browser.loadURL(win, job.url, 15000);
-    await _sleep(1500);
-    const detailBtn = await selector.locate(win, 'lagou', 'apply', 'btn_apply', 5000);
-    if (detailBtn.ok && detailBtn.el) {
-      await _clickEl(win, detailBtn.el);
-      await _sleep(2000);
-    }
+  }
+
+  const cardIndex = (typeof index === 'number') ? index : -1;
+  logger.info('lagou', `卡片索引: ${cardIndex}`);
+  if (cardIndex < 0) return false;
+
+  await browser.evalJS(win, `
+    (function() {
+      var cards = document.querySelectorAll('.con_list_item, [class*="con_list_item"]');
+      var real = [];
+      cards.forEach(function(c) { if (c.querySelector('[class*="position_name"]')) real.push(c); });
+      if (real.length > ${cardIndex}) real[${cardIndex}].scrollIntoView({ block: 'center' });
+    })();
+  `);
+  await _sleep(500);
+
+  const clicked = await browser.evalJS(win, `
+    (function() {
+      var cards = document.querySelectorAll('.con_list_item, [class*="con_list_item"]');
+      var real = [];
+      cards.forEach(function(c) { if (c.querySelector('[class*="position_name"]')) real.push(c); });
+      var card = real[${cardIndex}];
+      if (!card) return false;
+
+      var selectors = ['.send-CV', '[class*="send-CV"]', '.btn-apply', '[class*="btn-apply"]'];
+      for (var i = 0; i < selectors.length; i++) {
+        var btn = card.querySelector(selectors[i]);
+        if (btn && btn.offsetHeight > 0) { btn.click(); return true; }
+      }
+
+      var allBtns = card.querySelectorAll('a, button, span');
+      for (var j = 0; j < allBtns.length; j++) {
+        var t = allBtns[j].textContent.trim();
+        if ((t === '投简历' || t === '发送简历' || t === '立即投递') && allBtns[j].offsetHeight > 0) {
+          allBtns[j].click();
+          return true;
+        }
+      }
+      return false;
+    })();
+  `);
+
+  logger.info('lagou', `点击按钮: ${clicked}`);
+  if (!clicked) return false;
+
+  await _sleep(2000);
+
+  const afterClick = await browser.evalJS(win, `
+    (function() {
+      if (!document.body) return JSON.stringify({ url: window.location.href });
+      var text = (document.body.innerText || '');
+      return JSON.stringify({ success: text.includes('投递成功') || text.includes('发送成功'), bodySnippet: text.substring(0, 300) });
+    })();
+  `);
+  if (afterClick) {
+    try {
+      const info = JSON.parse(afterClick);
+      if (info.success) {
+        logger.info('lagou', `页面提示投递成功`);
+        return true;
+      }
+    } catch (e) {}
   }
 
   return await _handleForm(win, resume);

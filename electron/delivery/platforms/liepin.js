@@ -24,7 +24,6 @@ function cfg() {
 async function loginCheck(win) {
   const url = win.webContents.getURL();
   if (url.includes('/login') || url.includes('/verify') || url.includes('/check')) return false;
-
   const cookies = await browser.getCookies('liepin');
   const authNames = (cfg() && cfg().authCookie) || ['user_sec_id', '__session__'];
   const cookieNames = cookies.map(c => c.name);
@@ -44,6 +43,9 @@ async function searchJobs(win, filter) {
   const url = `https://www.liepin.com/zhaopin/?key=${encodeURIComponent(keyword)}&dqs=${cityCode}`;
   logger.info('liepin', `搜索: ${keyword} @ ${city}(code=${cityCode})`);
 
+  // ★ 缓存搜索页 URL
+  win._liepinSearchUrl = url;
+
   await browser.loadURL(win, url, 15000);
   await _sleep(2000);
 
@@ -56,11 +58,17 @@ async function searchJobs(win, filter) {
   const jobs = await _extractJobList(win);
   logger.info('liepin', `提取到 ${jobs.length} 个职位`);
 
+  // ★ 缓存 job 列表
+  win._liepinJobs = jobs;
+  win._liepinSearchTime = Date.now();
+
+  // 最多翻 3 页
   for (let page = 2; page <= 3; page++) {
     if (await _clickNextPage(win)) {
       await _sleep(1500);
       const more = await _extractJobList(win);
       jobs.push(...more);
+      win._liepinJobs = jobs;
     } else break;
   }
 
@@ -70,15 +78,16 @@ async function searchJobs(win, filter) {
 async function _extractJobList(win) {
   const raw = await browser.evalJS(win, `
     (function() {
-      var items = document.querySelectorAll('.sojob-item-main, [class*="job-list-item"]');
+      var items = document.querySelectorAll('.job-list-box .job-list-item, .sojob-item-main');
       var out = [];
       items.forEach(function(el) {
         var titleEl = el.querySelector('.job-info .job-title, [class*="job-title"]');
+        if (!titleEl || titleEl.textContent.trim().length < 2) return;
         var companyEl = el.querySelector('.company-name a, [class*="company-name"]');
         var salaryEl = el.querySelector('.job-salary, [class*="salary"]');
         var linkEl = el.querySelector('a[href*="/job/"], a[href*="/company/"]');
         out.push({
-          title: titleEl ? titleEl.textContent.trim() : '',
+          title: titleEl.textContent.trim(),
           company: companyEl ? companyEl.textContent.trim() : '',
           salary: salaryEl ? salaryEl.textContent.trim() : '',
           url: linkEl ? linkEl.href : '',
@@ -104,24 +113,102 @@ async function _clickNextPage(win) {
 // ═══════════════════════════════════════════════════════════════
 // 接口 3: applyOne — 弹窗表单（求职信必填）
 // ═══════════════════════════════════════════════════════════════
-async function applyOne(win, job, resume) {
-  // 列表页点"应聘"
-  const btn = await selector.locate(win, 'liepin', 'apply', 'btn_apply', 3000);
-  if (btn.ok && btn.el) {
-    await _clickEl(win, btn.el);
+async function applyOne(win, job, resume, index) {
+  logger.info('liepin', `投递开始: ${job.company} - ${job.title}`);
+
+  // ★ 确保窗口在搜索页
+  const currentUrl = win.webContents.getURL();
+  if (win._liepinSearchUrl && !currentUrl.includes('/zhaopin/')) {
+    await browser.loadURL(win, win._liepinSearchUrl, 15000);
     await _sleep(2000);
-  } else if (job.url) {
-    // 进详情页
-    await browser.loadURL(win, job.url, 15000);
-    await _sleep(1500);
-    const detailBtn = await selector.locate(win, 'liepin', 'apply', 'btn_apply', 5000);
-    if (detailBtn.ok && detailBtn.el) {
-      await _clickEl(win, detailBtn.el);
-      await _sleep(2000);
-    }
   }
 
-  // 弹窗表单
+  // ★ 直接用 index 定位卡片
+  const cardIndex = (typeof index === 'number') ? index : -1;
+  logger.info('liepin', `卡片索引: ${cardIndex}`);
+  if (cardIndex < 0) return false;
+
+  // ★ 滚动到卡片
+  await browser.evalJS(win, `
+    (function() {
+      var cards = document.querySelectorAll('.job-list-box .job-list-item, .sojob-item-main');
+      var real = [];
+      cards.forEach(function(c) { if (c.querySelector('[class*="job-title"]')) real.push(c); });
+      if (real.length > ${cardIndex}) real[${cardIndex}].scrollIntoView({ block: 'center' });
+    })();
+  `);
+  await _sleep(500);
+
+  // ★ 点击"应聘"按钮（多级 fallback）
+  const clicked = await browser.evalJS(win, `
+    (function() {
+      var cards = document.querySelectorAll('.job-list-box .job-list-item, .sojob-item-main');
+      var real = [];
+      cards.forEach(function(c) { if (c.querySelector('[class*="job-title"]')) real.push(c); });
+      var card = real[${cardIndex}];
+      if (!card) return false;
+
+      // CSS 选择器
+      var selectors = ['.apply-btn', '[class*="apply-btn"]', '.job-apply-btn', 'a.apply-btn'];
+      for (var i = 0; i < selectors.length; i++) {
+        var btn = card.querySelector(selectors[i]);
+        if (btn && btn.offsetHeight > 0) { btn.click(); return true; }
+      }
+
+      // 文字匹配
+      var allBtns = card.querySelectorAll('a, button, span, div[role="button"]');
+      for (var j = 0; j < allBtns.length; j++) {
+        var t = allBtns[j].textContent.trim();
+        if ((t === '应聘' || t === '立即应聘' || t === '投递简历') && allBtns[j].offsetHeight > 0) {
+          allBtns[j].click();
+          return true;
+        }
+      }
+
+      // 全局搜索
+      var globalBtns = document.querySelectorAll('a, button, span');
+      for (var k = 0; k < globalBtns.length; k++) {
+        var gt = globalBtns[k].textContent.trim();
+        if (gt === '应聘' && globalBtns[k].offsetHeight > 0) {
+          globalBtns[k].click();
+          return true;
+        }
+      }
+
+      return false;
+    })();
+  `);
+
+  logger.info('liepin', `点击"应聘": ${clicked}`);
+  if (!clicked) {
+    logger.warn('liepin', `未找到应聘按钮`);
+    return false;
+  }
+
+  await _sleep(2000);
+
+  // ★ 检查是否直接成功
+  const afterClick = await browser.evalJS(win, `
+    (function() {
+      if (!document.body) return JSON.stringify({ url: window.location.href, note: 'navigating' });
+      var text = (document.body.innerText || '');
+      var success = text.includes('投递成功') || text.includes('应聘成功') || text.includes('已投递');
+      return JSON.stringify({ url: window.location.href, success: success, bodySnippet: text.substring(0, 300) });
+    })();
+  `);
+  logger.info('liepin', `点击后状态: ${afterClick}`);
+
+  if (afterClick) {
+    try {
+      const info = JSON.parse(afterClick);
+      if (info.success) {
+        logger.info('liepin', `页面提示投递成功`);
+        return true;
+      }
+    } catch (e) {}
+  }
+
+  // ★ 处理弹窗表单
   return await _handleForm(win, resume);
 }
 

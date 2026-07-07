@@ -56,11 +56,16 @@ async function searchJobs(win, filter) {
   const jobs = await _extractJobList(win);
   logger.info('job51', `提取到 ${jobs.length} 个职位`);
 
+  // ★ 缓存 job 列表到 window
+  win._job51Jobs = jobs;
+  win._job51SearchUrl = url;
+
   for (let page = 2; page <= 3; page++) {
     if (await _clickNextPage(win)) {
       await _sleep(1500);
       const more = await _extractJobList(win);
       jobs.push(...more);
+      win._job51Jobs = jobs;
     } else break;
   }
 
@@ -104,20 +109,74 @@ async function _clickNextPage(win) {
 // ═══════════════════════════════════════════════════════════════
 // 接口 3: applyOne — 弹窗表单（Resume 上传必填）
 // ═══════════════════════════════════════════════════════════════
-async function applyOne(win, job, resume) {
-  // 列表页直接点"申请职位"
-  const btn = await selector.locate(win, 'job51', 'apply', 'btn_apply', 3000);
-  if (btn.ok && btn.el) {
-    await _clickEl(win, btn.el);
+async function applyOne(win, job, resume, index) {
+  logger.info('job51', `投递开始: ${job.company} - ${job.title}`);
+
+  const currentUrl = win.webContents.getURL();
+  if (win._job51SearchUrl && !currentUrl.includes('search.51job.com')) {
+    await browser.loadURL(win, win._job51SearchUrl, 15000);
     await _sleep(2000);
-  } else if (job.url) {
-    await browser.loadURL(win, job.url, 15000);
-    await _sleep(1500);
-    const detailBtn = await selector.locate(win, 'job51', 'apply', 'btn_apply', 5000);
-    if (detailBtn.ok && detailBtn.el) {
-      await _clickEl(win, detailBtn.el);
-      await _sleep(2000);
-    }
+  }
+
+  // ★ 直接用 index 定位卡片
+  const cardIndex = (typeof index === 'number') ? index : -1;
+  logger.info('job51', `卡片索引: ${cardIndex}`);
+  if (cardIndex < 0) return false;
+
+  // ★ 滚动到卡片 + 点击
+  await browser.evalJS(win, `
+    (function() {
+      var cards = document.querySelectorAll('.j_result .e:not(.title)');
+      if (cards.length > ${cardIndex}) cards[${cardIndex}].scrollIntoView({ block: 'center' });
+    })();
+  `);
+  await _sleep(500);
+
+  const clicked = await browser.evalJS(win, `
+    (function() {
+      var cards = document.querySelectorAll('.j_result .e:not(.title)');
+      var card = cards[${cardIndex}];
+      if (!card) return false;
+
+      var selectors = ['.apply-btn', '[class*="applybtn"]', '[class*="apply-btn"]'];
+      for (var i = 0; i < selectors.length; i++) {
+        var btn = card.querySelector(selectors[i]);
+        if (btn && btn.offsetHeight > 0) { btn.click(); return true; }
+      }
+
+      var allBtns = card.querySelectorAll('a, button, span');
+      for (var j = 0; j < allBtns.length; j++) {
+        var t = allBtns[j].textContent.trim();
+        if ((t === '申请职位' || t === '立即申请' || t === '投递简历') && allBtns[j].offsetHeight > 0) {
+          allBtns[j].click();
+          return true;
+        }
+      }
+      return false;
+    })();
+  `);
+
+  logger.info('job51', `点击按钮: ${clicked}`);
+  if (!clicked) return false;
+
+  await _sleep(2000);
+
+  // ★ 检查是否直接成功
+  const afterClick = await browser.evalJS(win, `
+    (function() {
+      if (!document.body) return JSON.stringify({ url: window.location.href });
+      var text = (document.body.innerText || '');
+      return JSON.stringify({ success: text.includes('投递成功') || text.includes('申请成功'), bodySnippet: text.substring(0, 300) });
+    })();
+  `);
+  if (afterClick) {
+    try {
+      const info = JSON.parse(afterClick);
+      if (info.success) {
+        logger.info('job51', `页面提示投递成功`);
+        return true;
+      }
+    } catch (e) {}
   }
 
   return await _handleForm(win, resume);
