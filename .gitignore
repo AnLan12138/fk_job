@@ -1,0 +1,28 @@
+# Dependencies
+node_modules/
+
+# Build
+dist/
+
+# Data & logs
+*.db
+*.log
+log.txt
+data/profiles/
+screenshots/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# IDE
+.vscode/
+.idea/
+
+# Test outputs
+test-boss.js
+test-boss-detail.js
+boss_search_debug.json
+diagnose_*.json
+diagnose_latest.txt
+tmp-*.txt

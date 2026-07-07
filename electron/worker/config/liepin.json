@@ -1,0 +1,113 @@
+{
+  "platform": "liepin",
+  "baseUrl": "https://www.liepin.com",
+  "cities": {
+    "深圳": "050090", "广州": "050020", "北京": "010010", "上海": "020010",
+    "杭州": "070020", "成都": "280020", "武汉": "170020", "南京": "060020",
+    "西安": "210020", "长沙": "180020", "苏州": "060030", "东莞": "050040",
+    "天津": "030010", "重庆": "040010", "厦门": "090040",
+    "合肥": "080020", "郑州": "150020", "青岛": "120020"
+  },
+  "experience": { "1-3": "020", "3-5": "030", "5-10": "040", "10+": "050" },
+  "education": { "大专": "1", "本科": "2", "硕士": "3", "博士": "4" },
+  "salary": { "3k": "1", "5k": "2", "10k": "3", "15k": "4", "20k": "5", "30k": "7", "50k": "8" },
+
+  "verify": {
+    "urlPatterns": ["/login", "/passport", "/verify", "/safe/"],
+    "selectors": [".geetest", "[class*='captcha']", "[class*='verify']", ".slider-captcha"],
+    "textPatterns": ["请先登录", "登录后查看", "请登录", "请进行验证", "滑动验证"]
+  },
+
+  "search": {
+    "urlTemplate": "https://www.liepin.com/zhaopin/?key={keyword}&dqs={city}",
+    "elements": {
+      "keyword_input": {
+        "css": "input[class*='search'], input[name='key'], input[placeholder*='搜索']"
+      },
+      "search_btn": {
+        "css": "button[class*='search'], a[class*='search']",
+        "text": "搜索"
+      },
+      "job_item": [
+        { "strategy": "css", "value": "li[class*='job-list-item']" },
+        { "strategy": "css", "value": "li[class*='sojob-item']" },
+        { "strategy": "css", "value": "[class*='job-detail']" },
+        { "strategy": "css", "value": "[class*='job-card'], [class*='jobcard']" },
+        { "strategy": "xpath", "value": "//li[contains(@class,'job')]" }
+      ],
+      "job_link": [
+        { "strategy": "css", "value": "a[href*='/job/'][href$='.shtml']" },
+        { "strategy": "css", "value": "a[href*='/a/'][href$='.shtml']" },
+        { "strategy": "css", "value": "a[href*='liepin.com/job']" },
+        { "strategy": "xpath", "value": "//a[contains(@href,'/job/') and contains(@href,'.shtml')]" }
+      ],
+      "job_title": [
+        { "strategy": "css", "value": "h3[class*='title']" },
+        { "strategy": "css", "value": "[class*='job-title']" },
+        { "strategy": "css", "value": "[class*='name']" },
+        { "strategy": "css", "value": "[class*='job-name']" }
+      ],
+      "company_name": [
+        { "strategy": "css", "value": "[class*='company']" },
+        { "strategy": "css", "value": "[class*='cpy']" },
+        { "strategy": "css", "value": "[class*='co-name']" },
+        { "strategy": "css", "value": "a[href*='/company/']" },
+        { "strategy": "css", "value": "[class*='employer']" }
+      ],
+      "salary": [
+        { "strategy": "css", "value": "[class*='salary']" },
+        { "strategy": "css", "value": "[class*='sal']" },
+        { "strategy": "css", "value": "[class*='text-warning']" },
+        { "strategy": "css", "value": "[class*='pay']" }
+      ],
+      "next_page": [
+        { "strategy": "css", "value": "a[class*='next'], .pager a.next" },
+        { "strategy": "text", "value": "下一页" }
+      ]
+    }
+  },
+
+  "apply": {
+    "searchPageButtons": {
+      "apply_btn": [
+        { "strategy": "text", "value": "投递简历" },
+        { "strategy": "text", "value": "立即投递" },
+        { "strategy": "text", "value": "投递" },
+        { "strategy": "css", "value": "[class*='apply-btn']" },
+        { "strategy": "css", "value": "button[class*='deliver']" },
+        { "strategy": "css", "value": "a[class*='apply']" },
+        { "strategy": "css", "value": "[class*='job-operate'] [class*='apply']" }
+      ],
+      "chat_btn": [
+        { "strategy": "text", "value": "立即沟通" },
+        { "strategy": "text", "value": "聊一聊" },
+        { "strategy": "css", "value": "[class*='chat-btn']" }
+      ],
+      "applied_status": ["已投递", "已沟通", "投递过了"],
+      "confirm_btn": [
+        { "strategy": "text", "value": "确定" },
+        { "strategy": "text", "value": "确认" },
+        { "strategy": "text", "value": "是的" },
+        { "strategy": "css", "value": ".dialog-btn-confirm, [class*='confirm-btn']" }
+      ]
+    },
+    "elements": {
+      "apply_btn": [
+        { "strategy": "text", "value": "投递简历" },
+        { "strategy": "text", "value": "立即投递" },
+        { "strategy": "text", "value": "投递" },
+        { "strategy": "css", "value": "[class*='apply-btn']" },
+        { "strategy": "css", "value": "button[class*='deliver']" }
+      ],
+      "chat_btn": [
+        { "strategy": "text", "value": "立即沟通" },
+        { "strategy": "text", "value": "聊一聊" }
+      ],
+      "confirm_btn": { "text": "确定", "text_alt": "确认", "text_alt2": "是的" }
+    },
+    "successIndicators": ["投递成功", "已投递", "简历已发送"],
+    "blockIndicators": ["请先登录", "简历不完整", "操作频繁", "今日投递已达上限"]
+  },
+
+  "rateLimit": { "maxPerDay": 50, "delayMin": 3, "delayMax": 6 }
+}

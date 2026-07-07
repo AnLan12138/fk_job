@@ -1,0 +1,25 @@
+{
+  "name": "fuck-job",
+  "version": "1.0.0",
+  "description": "一键全平台求职投递引擎",
+  "main": "electron/main.js",
+  "scripts": {
+    "start": "electron .",
+    "dev": "electron ."
+  },
+  "license": "MIT",
+  "dependencies": {
+    "sql.js": "^1.10.0"
+  },
+  "devDependencies": {
+    "electron": "^31.0.0",
+    "electron-builder": "^24.0.0"
+  },
+  "build": {
+    "appId": "com.fuckjob.app",
+    "productName": "求职助手",
+    "directories": { "output": "dist" },
+    "win": { "target": "nsis" },
+    "files": ["electron/**/*", "renderer/**/*", "data/**/*", "node_modules/**/*"]
+  }
+}

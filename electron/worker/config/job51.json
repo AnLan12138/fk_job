@@ -1,0 +1,137 @@
+{
+  "platform": "51job_qianchengwuyou",
+  "baseUrl": "https://we.51job.com",
+  "cities": {
+    "深圳": "040000", "广州": "030200", "北京": "010000", "上海": "020000",
+    "杭州": "080200", "成都": "090200", "武汉": "180200", "南京": "070200",
+    "西安": "200200", "长沙": "190200", "苏州": "070300", "东莞": "190400",
+    "天津": "050000", "重庆": "060000", "厦门": "110300", "合肥": "150200",
+    "郑州": "170200", "青岛": "120300"
+  },
+  "experience": {
+    "1-3": "0102",
+    "3-5": "0103",
+    "5-10": "0104",
+    "10+": "0105"
+  },
+  "education": {
+    "大专": "03",
+    "本科": "04",
+    "硕士": "05",
+    "博士": "06"
+  },
+  "salary": {
+    "3k": "04",
+    "5k": "05",
+    "6k": "06",
+    "8k": "07",
+    "10k": "08",
+    "15k": "09",
+    "20k": "10",
+    "30k": "11",
+    "50k": "12"
+  },
+  "verify": {
+    "urlPatterns": [
+      "/login",
+      "/passport"
+    ],
+    "selectors": [
+      ".geetest",
+      "[class*='captcha']",
+      "[class*='verify']",
+      ".slider-captcha"
+    ],
+    "textPatterns": [
+      "请登录",
+      "请先登录",
+      "登录后查看"
+    ]
+  },
+  "search": {
+    "urlTemplate": "https://we.51job.com/pc/search?keyword={keyword}&jobArea={city}",
+    "elements": {
+      "keyword_input": {
+        "css": "input.shadedword, input[name='keyword'], input[placeholder*='搜索']"
+      },
+      "search_btn": {
+        "css": "button[class*='search'], a[class*='search']",
+        "text": "搜索"
+      },
+      "job_item": [
+        { "strategy": "css", "value": "div.joblist" },
+        { "strategy": "css", "value": "a[href*='51job.com/all/co']" },
+        { "strategy": "css", "value": "a.list-item" },
+        { "strategy": "css", "value": "[class*='joblist-item'], [class*='job-item']" },
+        { "strategy": "css", "value": "[class*='search-result'] [class*='item']" },
+        { "strategy": "css", "value": "div[class*='jobcard'], div[class*='job-card']" }
+      ],
+      "job_link": [
+        { "strategy": "css", "value": "a[href*='/job/']" },
+        { "strategy": "css", "value": "a[data-jobid]" },
+        { "strategy": "css", "value": "a[data-job-id]" },
+        { "strategy": "css", "value": "a[href*='jobid']" },
+        { "strategy": "css", "value": "div[data-jobid] a[href]" },
+        { "strategy": "css", "value": ".jname a[href]" },
+        { "strategy": "xpath", "value": "//a[contains(@href,'/job/')]" }
+      ],
+      "job_title": [
+        { "strategy": "css", "value": ".jname, [class*='jname']" },
+        { "strategy": "css", "value": "[class*='job-name'], [class*='jobName']" },
+        { "strategy": "css", "value": "[class*='title']" },
+        { "strategy": "css", "value": "a[href*='/job/']" }
+      ],
+      "company_name": [
+        { "strategy": "css", "value": "a[href*='/all/co']" },
+        { "strategy": "css", "value": "[class*='cname'], [class*='companyName']" },
+        { "strategy": "css", "value": "[class*='company'] a" }
+      ],
+      "salary": [
+        { "strategy": "css", "value": "[class*='sal'], [class*='salary']" },
+        { "strategy": "text", "value": "面议" }
+      ],
+      "next_page": [
+        { "strategy": "css", "value": "a[class*='next'], .pager a.next" },
+        { "strategy": "text", "value": "下一页" }
+      ]
+    }
+  },
+  "apply": {
+    "searchPageButtons": {
+      "apply_btn": [
+        { "strategy": "text", "value": "申请" },
+        { "strategy": "text", "value": "立即申请" },
+        { "strategy": "css", "value": "[class*='apply-btn'], button[class*='apply']" },
+        { "strategy": "css", "value": "[class*='deliver'], button[class*='deliver']" },
+        { "strategy": "css", "value": "a[class*='apply']" },
+        { "strategy": "css", "value": "a[class*='do-apply']" }
+      ],
+      "applied_status": ["已申请", "已投递", "申请过了"]
+    },
+    "elements": {
+      "apply_btn": [
+        { "strategy": "text", "value": "申请" },
+        { "strategy": "text", "value": "立即申请" },
+        { "strategy": "css", "value": "[class*='apply-btn']" },
+        { "strategy": "css", "value": "button[class*='deliver']" },
+        { "strategy": "css", "value": "a[class*='do-apply']" }
+      ]
+    },
+    "successIndicators": [
+      "投递成功",
+      "已投递",
+      "申请成功"
+    ],
+    "blockIndicators": [
+      "请先登录",
+      "简历不完整",
+      "操作频繁",
+      "今日投递已达上限"
+    ]
+  },
+  "rateLimit": {
+    "maxPerDay": 50,
+    "delayMin": 3,
+    "delayMax": 6
+  }
+}

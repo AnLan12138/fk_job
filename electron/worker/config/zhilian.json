@@ -1,0 +1,150 @@
+{
+  "platform": "zhilian_zhaopin",
+  "baseUrl": "https://www.zhaopin.com",
+  "cities": {
+    "深圳": "765", "广州": "763", "北京": "530", "上海": "538",
+    "杭州": "653", "成都": "801", "武汉": "736", "南京": "635",
+    "西安": "854", "长沙": "749", "苏州": "641", "东莞": "773",
+    "天津": "533", "重庆": "551", "厦门": "682", "合肥": "603",
+    "郑州": "593", "青岛": "624"
+  },
+  "experience": {
+    "1-3": "0301",
+    "3-5": "0302",
+    "5-10": "0303",
+    "10+": "0304"
+  },
+  "education": {
+    "大专": "3",
+    "本科": "4",
+    "硕士": "5",
+    "博士": "6"
+  },
+  "verify": {
+    "urlPatterns": [
+      "/login",
+      "/passport"
+    ],
+    "selectors": [
+      ".geetest",
+      "[class*='captcha']",
+      "[class*='verify']",
+      ".slider-captcha"
+    ],
+    "textPatterns": [
+      "请先登录",
+      "登录后查看",
+      "请登录",
+      "扫码登录",
+      "安全验证"
+    ]
+  },
+  "search": {
+    "urlTemplate": "https://www.zhaopin.com/sou/jl{city}/kw{keyword}",
+    "elements": {
+      "keyword_input": {
+        "css": "input[class*='search'], input[name='keyword'], input[placeholder*='搜索']"
+      },
+      "search_btn": {
+        "css": "button[class*='search'], a[class*='search'], button.search-btn",
+        "text": "搜索"
+      },
+      "job_item": [
+        { "strategy": "css", "value": "a.jobinfo__name" },
+        { "strategy": "css", "value": "[class*=positionlist] a" },
+        { "strategy": "css", "value": "a[href*='/jobs/']" },
+        { "strategy": "css", "value": "[class*='joblist'] li, [class*='job-list'] li" },
+        { "strategy": "css", "value": "[class*='search-result'] [class*='item']" },
+        { "strategy": "css", "value": "[class*='job-item'], [class*='JobItem']" }
+      ],
+      "job_link": [
+        { "strategy": "css", "value": "a[href*='/jobs/']" },
+        { "strategy": "css", "value": "a[href*='positionId']" },
+        { "strategy": "css", "value": "[class*='jobName'] a" },
+        { "strategy": "css", "value": "[class*='position-title'] a" },
+        { "strategy": "css", "value": "a[href*='zhaopin.com/jobs']" },
+        { "strategy": "xpath", "value": "//a[contains(@href,'/jobs/')]" }
+      ],
+      "job_title": [
+        { "strategy": "css", "value": "a.jobinfo__name" },
+        { "strategy": "css", "value": "[class*='jobName']" },
+        { "strategy": "css", "value": "[class*='job-name']" },
+        { "strategy": "css", "value": "[class*='position-title']" }
+      ],
+      "company_name": [
+        { "strategy": "css", "value": "a.companyinfo__name" },
+        { "strategy": "css", "value": "[class*=company] a" },
+        { "strategy": "css", "value": "[class*='companyName']" },
+        { "strategy": "css", "value": "[class*='company-name']" }
+      ],
+      "salary": [
+        { "strategy": "css", "value": ".salary" },
+        { "strategy": "css", "value": "[class*='salary']" },
+        { "strategy": "css", "value": "[class*='pay']" },
+        { "strategy": "text", "value": "面议" }
+      ],
+      "next_page": [
+        { "strategy": "css", "value": "a[class*='next'], .soupager a[class*='next']" },
+        { "strategy": "text", "value": "下一页" }
+      ]
+    }
+  },
+  "apply": {
+    "searchPageButtons": {
+      "apply_btn": [
+        { "strategy": "text", "value": "申请职位" },
+        { "strategy": "text", "value": "立即申请" },
+        { "strategy": "text", "value": "申请" },
+        { "strategy": "css", "value": "[class*='apply-btn'], button[class*='apply']" },
+        { "strategy": "css", "value": "[class*='deliver'], button[class*='deliver']" },
+        { "strategy": "css", "value": "a[class*='apply'], a[class*='deliver']" }
+      ],
+      "chat_btn": [
+        { "strategy": "text", "value": "聊一聊" },
+        { "strategy": "text", "value": "立即沟通" },
+        { "strategy": "css", "value": "[class*='chat-btn'], [class*='chat-btn']" }
+      ],
+      "applied_status": ["已申请", "已投递", "继续沟通"],
+      "app_popup_close": [
+        { "strategy": "css", "value": "[class*='download-app'] [class*='close'], [class*='close-btn']" },
+        { "strategy": "css", "value": "[class*='open-app'] [class*='close']" },
+        { "strategy": "css", "value": "[class*='modal'] [class*='close']" },
+        { "strategy": "text", "value": "关闭" },
+        { "strategy": "text", "value": "取消" },
+        { "strategy": "text", "value": "不再提示" },
+        { "strategy": "text", "value": "下次再说" }
+      ]
+    },
+    "elements": {
+      "apply_btn": [
+        { "strategy": "text", "value": "申请职位" },
+        { "strategy": "text", "value": "立即申请" },
+        { "strategy": "text", "value": "申请" },
+        { "strategy": "css", "value": "[class*='apply-btn']" },
+        { "strategy": "css", "value": "button[class*='deliver']" }
+      ],
+      "chat_btn": [
+        { "strategy": "text", "value": "聊一聊" },
+        { "strategy": "text", "value": "立即沟通" }
+      ]
+    },
+    "successIndicators": [
+      "投递成功",
+      "申请成功",
+      "已投递",
+      "已申请"
+    ],
+    "blockIndicators": [
+      "下载APP",
+      "打开智联APP",
+      "请先登录",
+      "操作频繁",
+      "今日投递已达上限"
+    ]
+  },
+  "rateLimit": {
+    "maxPerDay": 50,
+    "delayMin": 3,
+    "delayMax": 6
+  }
+}

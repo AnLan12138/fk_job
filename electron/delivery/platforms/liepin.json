@@ -1,0 +1,69 @@
+{
+  "platform": "liepin",
+  "displayName": "猎聘",
+  "baseUrl": "https://www.liepin.com",
+  "loginUrl": "https://www.liepin.com/",
+  "searchUrl": "https://www.liepin.com/zhaopin/?key={keyword}&dqs={city}",
+  "authCookie": ["user_sec_id", "__session__", "abtest"],
+  "cities": {
+    "深圳": "050020", "广州": "050020", "北京": "010", "上海": "020",
+    "杭州": "080020", "成都": "090020", "武汉": "060020", "南京": "070020",
+    "西安": "100020", "长沙": "140020", "苏州": "070090", "东莞": "050210"
+  },
+  "verify": {
+    "urlPatterns": ["/login", "/verify", "/check"],
+    "selectors": [".verify-pop", "[class*='captcha']"],
+    "textPatterns": ["请登录", "安全验证"]
+  },
+  "search": {
+    "job_list": [
+      { "strategy": "css", "value": ".job-list-box .job-list-item" },
+      { "strategy": "css", "value": ".sojob-item-main" },
+      { "strategy": "css", "value": "[class*='job-list-item']" }
+    ],
+    "job_title": [
+      { "strategy": "css", "value": ".job-info .job-title" },
+      { "strategy": "css", "value": "[class*='job-title']" }
+    ],
+    "company_name": [
+      { "strategy": "css", "value": ".company-name a" },
+      { "strategy": "css", "value": "[class*='company-name']" }
+    ],
+    "salary": [
+      { "strategy": "css", "value": ".job-salary" },
+      { "strategy": "css", "value": "[class*='salary']" }
+    ],
+    "next_page": [
+      { "strategy": "css", "value": "[class*='next']" },
+      { "strategy": "text", "value": "下一页" }
+    ]
+  },
+  "apply": {
+    "btn_apply": [
+      { "strategy": "css", "value": ".apply-btn" },
+      { "strategy": "css", "value": "[class*='apply-btn']" },
+      { "strategy": "css", "value": ".job-apply-btn" },
+      { "strategy": "text", "value": "应聘" },
+      { "strategy": "text", "value": "立即应聘" },
+      { "strategy": "text", "value": "投递简历" }
+    ],
+    "form_fields": {
+      "expected_salary": [
+        { "strategy": "css", "value": "input[name*='salary'], input[placeholder*='薪资']" },
+        { "strategy": "text", "value": "期望月薪" }
+      ],
+      "self_intro": [
+        { "strategy": "css", "value": "textarea[name*='intro'], textarea[placeholder*='介绍']" },
+        { "strategy": "text", "value": "求职信" }
+      ]
+    },
+    "btn_submit": [
+      { "strategy": "text", "value": "提交" },
+      { "strategy": "text", "value": "确    定" },
+      { "strategy": "css", "value": "[class*='submit-btn']" }
+    ]
+  },
+  "successIndicators": ["投递成功", "应聘成功", "已投递"],
+  "failIndicators": ["请先登录", "需要验证", "投递失败"],
+  "rateLimit": { "maxPerDay": 30, "delayMin": 5, "delayMax": 10 }
+}

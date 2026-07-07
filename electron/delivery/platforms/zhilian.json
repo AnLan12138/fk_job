@@ -1,0 +1,71 @@
+{
+  "platform": "zhilian",
+  "displayName": "智联招聘",
+  "baseUrl": "https://www.zhaopin.com",
+  "loginUrl": "https://www.zhaopin.com/",
+  "searchUrl": "https://sou.zhaopin.com/?jl={city}&kw={keyword}",
+  "authCookie": ["at", "rt", "user_id", "zp_passport_deepknow_session"],
+  "cities": {
+    "深圳": "736", "广州": "736", "北京": "530", "上海": "538",
+    "杭州": "653", "成都": "665", "武汉": "702", "南京": "635",
+    "西安": "613", "长沙": "606", "苏州": "620", "东莞": "749",
+    "天津": "531", "重庆": "551", "厦门": "691", "合肥": "664",
+    "郑州": "681", "青岛": "670"
+  },
+  "verify": {
+    "urlPatterns": ["/login", "/verify", "/passport"],
+    "selectors": [".verify-box", "[class*='captcha']", ".geetest"],
+    "textPatterns": ["请登录", "登录后查看", "安全验证"]
+  },
+  "search": {
+    "job_list": [
+      { "strategy": "css", "value": ".joblist-box__item" },
+      { "strategy": "css", "value": "[class*='joblist-box']" },
+      { "strategy": "css", "value": ".search-result__list > div" }
+    ],
+    "job_title": [
+      { "strategy": "css", "value": ".jobinfo__name" },
+      { "strategy": "css", "value": "[class*='jobinfo__name']" },
+      { "strategy": "css", "value": "a[href*='/company/']" }
+    ],
+    "company_name": [
+      { "strategy": "css", "value": ".companyinfo__name" },
+      { "strategy": "css", "value": "[class*='companyinfo__name']" }
+    ],
+    "salary": [
+      { "strategy": "css", "value": ".jobinfo__salary" },
+      { "strategy": "css", "value": "[class*='salary']" }
+    ],
+    "next_page": [
+      { "strategy": "css", "value": "[class*='next']" },
+      { "strategy": "text", "value": "下一页" }
+    ]
+  },
+  "apply": {
+    "btn_apply": [
+      { "strategy": "css", "value": ".joblist-box__itemtbutton" },
+      { "strategy": "css", "value": "[class*='applybtn']" },
+      { "strategy": "css", "value": "[class*='apply-btn']" },
+      { "strategy": "text", "value": "申请职位" },
+      { "strategy": "text", "value": "立即申请" }
+    ],
+    "form_fields": {
+      "expected_salary": [
+        { "strategy": "css", "value": "input[name='expectedSalary'], input[placeholder*='薪资']" },
+        { "strategy": "text", "value": "期望薪资" }
+      ],
+      "self_intro": [
+        { "strategy": "css", "value": "textarea[name='selfIntro'], textarea[placeholder*='介绍']" },
+        { "strategy": "text", "value": "自我介绍" }
+      ]
+    },
+    "btn_submit": [
+      { "strategy": "text", "value": "提交" },
+      { "strategy": "text", "value": "确认投递" },
+      { "strategy": "css", "value": "[class*='submit']" }
+    ]
+  },
+  "successIndicators": ["投递成功", "已投递", "申请成功"],
+  "failIndicators": ["请先登录", "需要验证", "投递失败", "今日投递已达上限"],
+  "rateLimit": { "maxPerDay": 30, "delayMin": 5, "delayMax": 10 }
+}

@@ -1,0 +1,77 @@
+{
+  "platform": "boss",
+  "displayName": "BOSS直聘",
+  "baseUrl": "https://www.zhipin.com",
+  "loginUrl": "https://www.zhipin.com/",
+  "searchUrl": "https://www.zhipin.com/web/geek/jobs?city={city}&query={keyword}",
+  "authCookie": ["wt2", "lastCity", "wt"],
+  "cities": {
+    "深圳": "100010000", "广州": "100020000", "北京": "100000000",
+    "上海": "100030000", "杭州": "100080000", "成都": "100270000",
+    "武汉": "100140000", "南京": "100070000", "西安": "100200000",
+    "长沙": "100190000", "苏州": "100110000", "东莞": "100290000",
+    "天津": "100050000", "重庆": "100240000", "厦门": "100170000",
+    "合肥": "100150000", "郑州": "100180000", "青岛": "100090000"
+  },
+  "experience": { "1-3": "102", "3-5": "103", "5-10": "104", "10+": "105" },
+  "education": { "大专": "202", "本科": "203", "硕士": "204", "博士": "205" },
+  "salary": { "3": "402", "5": "403", "10": "404", "15": "405", "20": "406", "25": "407", "30": "408", "50": "409" },
+  "verify": {
+    "urlPatterns": ["/passport", "/verify", "/safe/"],
+    "selectors": [".geetest", "[class*='captcha']", "[class*='verify']", ".slider-captcha"],
+    "textPatterns": ["请登录", "登录后查看", "扫码登录", "安全验证", "滑动验证"]
+  },
+  "search": {
+    "job_list": [
+      { "strategy": "css", "value": ".job-card-wrap" },
+      { "strategy": "css", "value": ".card-area" },
+      { "strategy": "css", "value": ".job-card-box" },
+      { "strategy": "css", "value": ".rec-job-list > div" }
+    ],
+    "job_title": [
+      { "strategy": "css", "value": ".job-name" },
+      { "strategy": "css", "value": ".job-title" },
+      { "strategy": "css", "value": ".job-info .name" }
+    ],
+    "company_name": [
+      { "strategy": "css", "value": ".company-text" },
+      { "strategy": "css", "value": ".job-card-box > div:nth-child(2)" },
+      { "strategy": "css", "value": "a[href*='/gongsi/']" }
+    ],
+    "salary": [
+      { "strategy": "css", "value": ".job-salary" },
+      { "strategy": "css", "value": ".job-card-box .salary" },
+      { "strategy": "css", "value": ".tag-list + span" }
+    ],
+    "next_page": [
+      { "strategy": "css", "value": ".next-page" },
+      { "strategy": "css", "value": "[class*='next']" },
+      { "strategy": "text", "value": "下一页" }
+    ]
+  },
+  "apply": {
+    "btn_apply": [
+      { "strategy": "css", "value": ".btn-start-chat" },
+      { "strategy": "css", "value": "[class*='start-chat']" },
+      { "strategy": "css", "value": ".op-btn-chat" },
+      { "strategy": "css", "value": "[class*='btn-start-chat']" },
+      { "strategy": "css", "value": "a[class*='start-chat']" },
+      { "strategy": "text", "value": "立即沟通" },
+      { "strategy": "text", "value": "继续沟通" }
+    ],
+    "greeting_input": [
+      { "strategy": "css", "value": ".chat-input textarea" },
+      { "strategy": "css", "value": "textarea[class*='input']" },
+      { "strategy": "css", "value": "[class*='greeting'] textarea" },
+      { "strategy": "css", "value": ".chat-input" }
+    ],
+    "greeting_send": [
+      { "strategy": "css", "value": ".btn-send" },
+      { "strategy": "css", "value": "[class*='send-btn']" },
+      { "strategy": "text", "value": "发送" }
+    ]
+  },
+  "successIndicators": ["已发送", "沟通成功", "已打招呼", "发送成功"],
+  "failIndicators": ["请先登录", "需要验证", "操作频繁", "今日投递已达上限", "Boss限制"],
+  "rateLimit": { "maxPerDay": 50, "delayMin": 5, "delayMax": 10 }
+}

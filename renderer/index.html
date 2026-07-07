@@ -1,0 +1,319 @@
+<!DOCTYPE html>
+<html lang="zh-CN" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self' 'unsafe-inline'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'">
+  <title>求职助手</title>
+  <link rel="stylesheet" href="styles/main.css">
+</head>
+<body>
+
+<!-- Toast -->
+<div id="toast-container"></div>
+
+<!-- Auth overlay -->
+<div id="auth-overlay" class="auth-overlay" style="display:none">
+  <div class="auth-overlay-inner">
+    <div class="spinner"></div>
+    <p id="auth-overlay-text">正在打开授权窗口...</p>
+    <p class="hint">完成登录后关闭窗口即可</p>
+  </div>
+</div>
+
+<div class="layout">
+
+  <!-- ═══════ 左侧导航栏 ═══════ -->
+  <nav class="sidebar">
+    <div class="sidebar-brand">求职助手</div>
+
+    <div class="sidebar-nav">
+      <div class="nav-item active" data-nav="resume" onclick="switchNav('resume')">
+        <svg viewBox="0 0 16 16" width="16" height="16"><path d="M2 1h12v14H2V1zm1 1v12h10V2H3zm2 2h6v1H5V5zm0 3h6v1H5V8zm0 3h4v1H5v-1z"/></svg>
+        <span>简历</span>
+      </div>
+      <div class="nav-item" data-nav="auth" onclick="switchNav('auth')">
+        <svg viewBox="0 0 16 16" width="16" height="16"><path d="M8 1a3 3 0 013 3v2h1a1 1 0 011 1v6a1 1 0 01-1 1H4a1 1 0 01-1-1V7a1 1 0 011-1h1V4a3 3 0 013-3zm0 1a2 2 0 00-2 2v2h4V4a2 2 0 00-2-2zM4 7v6h8V7H4z"/></svg>
+        <span>授权</span>
+      </div>
+      <div class="nav-item" data-nav="filter" onclick="switchNav('filter')">
+        <svg viewBox="0 0 16 16" width="16" height="16"><path d="M1 2h14l-5.5 6v5L7 14V8L1 2zm1.5 1h11L8 8.5 2.5 3z"/></svg>
+        <span>筛选</span>
+      </div>
+      <div class="nav-item" data-nav="deliver" onclick="switchNav('deliver')">
+        <svg viewBox="0 0 16 16" width="16" height="16"><path d="M1 3l7-2 7 2v5c0 4-3.5 6.5-7 8-3.5-1.5-7-4-7-8V3zm1 1.3v4.7c0 3.2 2.8 5.3 6 6.7 3.2-1.4 6-3.5 6-6.7V4.3L8 2.3 2 4.3z"/></svg>
+        <span>投递</span>
+      </div>
+    </div>
+
+    <!-- 统计摘要 -->
+    <div class="sidebar-stats">
+      <div class="ss-row"><span class="ss-label">今日投递</span><span class="ss-val" id="stat-today">0</span></div>
+      <div class="ss-row"><span class="ss-label">成功</span><span class="ss-val ss-ok" id="stat-success">0</span></div>
+      <div class="ss-row"><span class="ss-label">失败</span><span class="ss-val ss-fail" id="stat-fail">0</span></div>
+      <div class="ss-row"><span class="ss-label">成功率</span><span class="ss-val" id="stat-rate">0%</span></div>
+    </div>
+
+    <!-- 主题切换 -->
+    <div class="sidebar-footer">
+      <button class="theme-toggle" onclick="toggleTheme()" title="切换主题">
+        <svg id="icon-sun" viewBox="0 0 16 16" width="16" height="16"><path d="M8 3a5 5 0 100 10 5 5 0 000-10zm0 1a4 4 0 110 8 4 4 0 010-8zM8 0h1v2H8V0zm0 14h1v2H8v-2zM0 8v-1h2v1H0zm14 0v-1h2v1h-2zM2.5 2.5l.7-.7 1.4 1.4-.7.7-1.4-1.4zm9.2 9.2l.7-.7 1.4 1.4-.7.7-1.4-1.4zm-9.2 0l-.7-.7 1.4-1.4.7.7-1.4 1.4zm9.2-9.2l-.7-.7 1.4-1.4.7.7-1.4 1.4z"/></svg>
+        <svg id="icon-moon" viewBox="0 0 16 16" width="16" height="16" style="display:none"><path d="M9 1a7 7 0 11-4.5 13A7 7 0 019 1zm-.5 1.5a5.5 5.5 0 100 11 5.5 5.5 0 00.5-11z"/></svg>
+        <span id="theme-label">深色</span>
+      </button>
+    </div>
+  </nav>
+
+  <!-- ═══════ 右侧内容区 ═══════ -->
+  <main class="content">
+
+    <!-- ── 简历 ── -->
+    <section class="page active" id="page-resume">
+      <div class="page-title">简历信息</div>
+
+      <div class="section">
+        <div class="section-title">基本信息</div>
+        <div class="grid cols-3">
+          <div class="field"><label>姓名 *</label><input type="text" id="r-name" placeholder="张三"></div>
+          <div class="field"><label>手机 *</label><input type="text" id="r-phone" placeholder="138xxxx"></div>
+          <div class="field"><label>邮箱 *</label><input type="text" id="r-email" placeholder="xx@qq.com"></div>
+        </div>
+        <div class="grid cols-3">
+          <div class="field"><label>期望城市</label><input type="text" id="r-city" placeholder="深圳"></div>
+          <div class="field"><label>期望薪资 (K/月)</label>
+            <div class="range-input"><input type="number" id="r-salary-min" placeholder="最低"><span>—</span><input type="number" id="r-salary-max" placeholder="最高"></div>
+          </div>
+          <div class="field"><label>完善度</label>
+            <div class="completion"><div class="completion-fill" id="resume-completion" style="width:0%"></div><span id="resume-completion-text">0%</span></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 教育经历 -->
+      <div class="section">
+        <div class="section-title">教育经历 <button class="btn-add-sm" onclick="addEducationRow()">+ 添加</button></div>
+        <div id="education-list" class="entry-list"></div>
+      </div>
+
+      <!-- 工作经历 -->
+      <div class="section">
+        <div class="section-title">工作经历 <button class="btn-add-sm" onclick="addWorkRow()">+ 添加</button></div>
+        <div id="work-list" class="entry-list"></div>
+      </div>
+
+      <!-- 技能标签 -->
+      <div class="section">
+        <div class="section-title">技能标签</div>
+        <div class="field"><input type="text" id="r-skill-input" placeholder="输入技能后按 Enter 添加" onkeydown="if(event.key==='Enter')addSkill()"></div>
+        <div id="skill-tags" class="tag-list"></div>
+        <div class="quick-picks">
+          <span class="qp-label">快选：</span>
+          <button class="qp-btn" onclick="quickAddSkill('Java')">Java</button>
+          <button class="qp-btn" onclick="quickAddSkill('Spring Boot')">Spring Boot</button>
+          <button class="qp-btn" onclick="quickAddSkill('MySQL')">MySQL</button>
+          <button class="qp-btn" onclick="quickAddSkill('Redis')">Redis</button>
+          <button class="qp-btn" onclick="quickAddSkill('Docker')">Docker</button>
+          <button class="qp-btn" onclick="quickAddSkill('Python')">Python</button>
+          <button class="qp-btn" onclick="quickAddSkill('Go')">Go</button>
+          <button class="qp-btn" onclick="quickAddSkill('React')">React</button>
+        </div>
+      </div>
+
+      <div class="action-row">
+        <button class="btn-primary" onclick="saveResume()">保存简历</button>
+      </div>
+    </section>
+
+    <!-- ── 授权 ── -->
+    <section class="page" id="page-auth">
+      <div class="page-title">平台授权</div>
+      <p class="hint">点击平台卡片 → 弹出浏览器窗口 → 扫码登录 → 完成后关闭窗口</p>
+
+      <div id="platform-list" class="platform-grid"></div>
+
+      <div class="action-row">
+        <button class="btn-primary" onclick="refreshAuth()">刷新授权状态</button>
+        <!-- 临时诊断按钮（上线前删） -->
+        <button class="btn-sm" onclick="runDiagnose()" style="margin-left:8px">🔍 诊断</button>
+      </div>
+      <!-- 临时诊断结果显示（上线前删） -->
+      <pre id="diagnose-result" style="margin-top:12px;padding:12px;background:#1a1a1a;color:#0f0;font-size:12px;white-space:pre-wrap;display:none"></pre>
+    </section>
+
+    <!-- ── 筛选 ── -->
+    <section class="page" id="page-filter">
+      <div class="page-title">筛选条件</div>
+
+      <!-- 通用条件 -->
+      <div class="section collapsible open">
+        <div class="section-title collapsible-toggle" onclick="toggleSection(this)">
+          <span>通用条件</span><span class="toggle-arrow">▼</span>
+        </div>
+        <div class="collapsible-body">
+          <div class="grid cols-2">
+            <div class="field"><label>岗位关键词 *</label><input type="text" id="f-keyword" placeholder="按 Enter 添加" onkeydown="if(event.key==='Enter')addFilterKeyword()"></div>
+            <div class="field"><label>城市</label><input type="text" id="f-city" placeholder="按 Enter 添加" onkeydown="if(event.key==='Enter')addFilterCity()"></div>
+          </div>
+          <div class="tag-list" id="filter-keywords"></div>
+          <div class="tag-list" id="filter-cities"></div>
+
+          <div class="grid cols-4" style="margin-top:12px">
+            <div class="field"><label>最低薪资(K)</label><input type="number" id="f-salary-min" placeholder="25"></div>
+            <div class="field"><label>最高薪资(K)</label><input type="number" id="f-salary-max" placeholder="不限"></div>
+            <div class="field"><label>学历</label>
+              <select id="f-education"><option value="">不限</option><option value="本科">本科及以上</option><option value="硕士">硕士及以上</option><option value="大专">大专及以上</option><option value="博士">博士</option></select>
+            </div>
+            <div class="field"><label>经验</label>
+              <select id="f-experience"><option value="">不限</option><option value="1-3">1-3年</option><option value="3-5">3-5年</option><option value="5-10">5-10年</option><option value="10+">10年以上</option></select>
+            </div>
+          </div>
+          <div class="grid cols-2">
+            <div class="field"><label>职位类型</label>
+              <select id="f-job-type"><option value="">不限</option><option value="全职">全职</option><option value="兼职">兼职</option><option value="实习">实习</option></select>
+            </div>
+            <div class="field"><label>公司规模</label>
+              <select id="f-company-size"><option value="">不限</option><option value="100-499">100-499人</option><option value="500-999">500-999人</option><option value="1000-9999">1000-9999人</option><option value="10000+">10000人以上</option></select>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 黑名单 -->
+      <div class="section collapsible open">
+        <div class="section-title collapsible-toggle" onclick="toggleSection(this)">
+          <span>黑名单</span><span class="toggle-arrow">▼</span>
+        </div>
+        <div class="collapsible-body">
+          <div class="field"><label>屏蔽关键词</label><input type="text" id="black-keyword" placeholder="按 Enter 添加" onkeydown="if(event.key==='Enter')addBlackKeyword()"></div>
+          <div class="quick-picks">
+            <span class="qp-label">一键：</span>
+            <button class="qp-btn qp-danger" onclick="quickAddBlackKeyword('外包')">外包</button>
+            <button class="qp-btn qp-danger" onclick="quickAddBlackKeyword('驻场')">驻场</button>
+            <button class="qp-btn qp-danger" onclick="quickAddBlackKeyword('996')">996</button>
+            <button class="qp-btn qp-danger" onclick="quickAddBlackKeyword('大小周')">大小周</button>
+            <button class="qp-btn qp-danger" onclick="quickAddBlackKeyword('劳务派遣')">劳务派遣</button>
+            <button class="qp-btn qp-danger" onclick="quickAddBlackKeyword('转包')">转包</button>
+            <button class="qp-btn qp-danger" onclick="quickAddBlackKeyword('培训')">培训</button>
+            <button class="qp-btn qp-danger qp-all" onclick="presetBlackKeywords()">全部添加</button>
+          </div>
+          <div id="blacklist-keywords" class="tag-list"></div>
+
+          <div class="field" style="margin-top:8px"><label>屏蔽公司</label><input type="text" id="black-company" placeholder="按 Enter 添加" onkeydown="if(event.key==='Enter')addBlackCompany()"></div>
+          <div id="blacklist-companies" class="tag-list"></div>
+        </div>
+      </div>
+
+      <!-- 高级条件 -->
+      <div class="section collapsible">
+        <div class="section-title collapsible-toggle" onclick="toggleSection(this)">
+          <span>高级条件</span><span class="toggle-arrow">▶</span>
+        </div>
+        <div class="collapsible-body">
+          <div class="grid cols-2">
+            <div class="field"><label>发布日期</label>
+              <select id="f-date"><option value="">不限</option><option value="1">24小时内</option><option value="3">3天内</option><option value="7" selected>7天内</option><option value="15">15天内</option><option value="30">30天内</option></select>
+            </div>
+            <div class="field"><label>投递策略</label>
+              <select id="f-strategy"><option value="">默认</option><option value="aggressive">激进</option><option value="conservative">保守</option></select>
+            </div>
+          </div>
+          <div class="field"><label>公司性质</label>
+            <div class="check-group">
+              <label><input type="checkbox" value="国企"> 国企/央企</label>
+              <label><input type="checkbox" value="外企"> 外企</label>
+              <label><input type="checkbox" value="上市公司"> 上市公司</label>
+              <label><input type="checkbox" value="民营"> 民营</label>
+              <label><input type="checkbox" value="合资"> 合资</label>
+            </div>
+          </div>
+          <div class="field"><label>融资阶段</label>
+            <div class="check-group">
+              <label><input type="checkbox" value="A轮"> A轮及以上</label>
+              <label><input type="checkbox" value="已上市"> 已上市</label>
+              <label><input type="checkbox" value="不需要融资"> 不需要融资</label>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="action-row">
+        <button class="btn-primary" onclick="saveFilter()">保存筛选条件</button>
+      </div>
+    </section>
+
+    <!-- ── 投递 ── -->
+    <section class="page" id="page-deliver">
+      <div class="page-title">投递控制台</div>
+
+      <!-- 平台选择 -->
+      <div class="section">
+        <div class="section-title">选择投递平台</div>
+        <div id="deliver-platforms" class="platform-check-list"></div>
+      </div>
+
+      <!-- 投递策略 -->
+      <div class="section collapsible open">
+        <div class="section-title collapsible-toggle" onclick="toggleSection(this)">
+          <span>投递策略</span><span class="toggle-arrow">▼</span>
+        </div>
+        <div class="collapsible-body">
+          <div class="grid cols-3">
+            <div class="field"><label>每平台上限 (份)</label><input type="number" id="f-daily-limit" value="10"></div>
+            <div class="field"><label>间隔 (秒)</label><input type="number" id="f-interval" value="5"></div>
+            <div class="field"><label>匹配度 (%)</label><input type="number" id="f-threshold" value="60"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 操作 -->
+      <div class="section deliver-actions-section">
+        <button class="btn-primary btn-wide" id="btn-start" onclick="startDelivery()">开始投递</button>
+        <button class="btn-danger btn-wide" id="btn-stop" onclick="stopDelivery()" style="display:none">停止投递</button>
+        <div id="deliver-status" class="deliver-status"></div>
+      </div>
+
+      <!-- 平台投递统计 -->
+      <div class="section" id="platform-stats-panel" style="display:none">
+        <div class="section-title">平台投递统计</div>
+        <div id="platform-stats-grid" class="platform-stats-grid"></div>
+      </div>
+
+      <!-- 进度面板 -->
+      <div class="section" id="progress-panel" style="display:none">
+        <div class="section-title">实时进度</div>
+        <div class="progress-numbers">
+          <div class="pn-item pn-total"><span id="ps-total-num">0</span><label>总计</label></div>
+          <div class="pn-item pn-ok"><span id="ps-ok-num">0</span><label>成功</label></div>
+          <div class="pn-item pn-fail"><span id="ps-fail-num">0</span><label>失败</label></div>
+          <div class="pn-item pn-skip"><span id="ps-skip-num">0</span><label>跳过</label></div>
+          <div class="pn-item pn-speed"><span id="ps-speed-num">-</span><label>速度</label></div>
+        </div>
+        <div class="progress-track"><div class="progress-fill" id="progress-bar" style="width:0%"></div></div>
+        <div id="progress-log" class="log-box"></div>
+      </div>
+
+      <!-- 投递历史 -->
+      <div class="section">
+        <div class="section-title">
+          投递历史
+          <div class="title-actions">
+            <select id="history-filter-status" onchange="loadHistory()">
+              <option value="">全部</option>
+              <option value="success">成功</option>
+              <option value="failed">失败</option>
+              <option value="skipped">跳过</option>
+            </select>
+            <button class="btn-sm" onclick="exportHistory()">导出CSV</button>
+            <button class="btn-sm btn-sm-red" onclick="clearHistory()">清空</button>
+          </div>
+        </div>
+        <div id="history-table"></div>
+      </div>
+    </section>
+
+  </main>
+</div>
+
+<script src="app.js"></script>
+</body>
+</html>

@@ -1,0 +1,68 @@
+{
+  "platform": "job51",
+  "displayName": "51job",
+  "baseUrl": "https://www.51job.com",
+  "loginUrl": "https://www.51job.com/",
+  "searchUrl": "https://search.51job.com/list/{city},000000,0000,00,9,99,{keyword},2,1.html",
+  "authCookie": ["guid", "51job", "acw_tc"],
+  "cities": {
+    "深圳": "040000", "广州": "030200", "北京": "010000", "上海": "020000",
+    "杭州": "080200", "成都": "090200", "武汉": "110200", "南京": "120200",
+    "西安": "140200", "长沙": "180200", "苏州": "130200", "东莞": "040200"
+  },
+  "verify": {
+    "urlPatterns": ["/login", "/verify", "/security"],
+    "selectors": [".verify-img", "[class*='captcha']"],
+    "textPatterns": ["请登录", "需要验证"]
+  },
+  "search": {
+    "job_list": [
+      { "strategy": "css", "value": ".j_result .e:not(.title)" },
+      { "strategy": "css", "value": ".el .e" },
+      { "strategy": "css", "value": "[class*='joblist'] > div" }
+    ],
+    "job_title": [
+      { "strategy": "css", "value": ".jname" },
+      { "strategy": "css", "value": "[class*='jname']" },
+      { "strategy": "css", "value": "a[href*='51job.com/']" }
+    ],
+    "company_name": [
+      { "strategy": "css", "value": ".cname" },
+      { "strategy": "css", "value": "[class*='cname']" }
+    ],
+    "salary": [
+      { "strategy": "css", "value": ".salary" },
+      { "strategy": "css", "value": "[class*='salary']" }
+    ],
+    "next_page": [
+      { "strategy": "css", "value": "[class*='next']" },
+      { "strategy": "text", "value": "下一页" }
+    ]
+  },
+  "apply": {
+    "btn_apply": [
+      { "strategy": "css", "value": ".btn.apply" },
+      { "strategy": "css", "value": "[class*='apply']" },
+      { "strategy": "text", "value": "申请职位" },
+      { "strategy": "text", "value": "立即申请" }
+    ],
+    "form_fields": {
+      "expected_salary": [
+        { "strategy": "css", "value": "input[name*='salary'], input[placeholder*='薪资']" },
+        { "strategy": "text", "value": "期望月薪" }
+      ],
+      "self_intro": [
+        { "strategy": "css", "value": "textarea[name*='intro'], textarea[placeholder*='介绍']" },
+        { "strategy": "text", "value": "自我介绍" }
+      ]
+    },
+    "btn_submit": [
+      { "strategy": "text", "value": "提交" },
+      { "strategy": "text", "value": "确认投递" },
+      { "strategy": "css", "value": "[class*='submit']" }
+    ]
+  },
+  "successIndicators": ["投递成功", "已投递", "申请成功"],
+  "failIndicators": ["请先登录", "需要验证", "投递失败"],
+  "rateLimit": { "maxPerDay": 30, "delayMin": 5, "delayMax": 10 }
+}

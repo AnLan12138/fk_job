@@ -1,0 +1,70 @@
+{
+  "platform": "lagou",
+  "displayName": "拉勾招聘",
+  "baseUrl": "https://www.lagou.com",
+  "loginUrl": "https://www.lagou.com/",
+  "searchUrl": "https://www.lagou.com/jobs/list_{keyword}?city={city}&fromSearch=true&labelWords=&suginput=",
+  "authCookie": ["user_trace_token", "LG_TOKEN", "index_session_token"],
+  "cities": {
+    "深圳": "深圳", "广州": "广州", "北京": "北京", "上海": "上海",
+    "杭州": "杭州", "成都": "成都", "武汉": "武汉", "南京": "南京",
+    "西安": "西安", "长沙": "长沙", "苏州": "苏州", "东莞": "东莞"
+  },
+  "verify": {
+    "urlPatterns": ["/login", "/verify", "/check"],
+    "selectors": [".verify-pop", "[class*='captcha']"],
+    "textPatterns": ["请登录", "安全验证"]
+  },
+  "search": {
+    "job_list": [
+      { "strategy": "css", "value": ".con_list_item" },
+      { "strategy": "css", "value": ".list_item_bot" },
+      { "strategy": "css", "value": "[class*='con_list_item']" }
+    ],
+    "job_title": [
+      { "strategy": "css", "value": ".p_top .position_name" },
+      { "strategy": "css", "value": "[class*='position_name']" },
+      { "strategy": "css", "value": "h3" }
+    ],
+    "company_name": [
+      { "strategy": "css", "value": ".company_name a" },
+      { "strategy": "css", "value": "[class*='company_name']" }
+    ],
+    "salary": [
+      { "strategy": "css", "value": ".money" },
+      { "strategy": "css", "value": "[class*='money']" }
+    ],
+    "next_page": [
+      { "strategy": "css", "value": "[class*='next']" },
+      { "strategy": "text", "value": "下一页" }
+    ]
+  },
+  "apply": {
+    "btn_apply": [
+      { "strategy": "css", "value": ".send-CV" },
+      { "strategy": "css", "value": "[class*='send-CV']" },
+      { "strategy": "css", "value": ".btn-apply" },
+      { "strategy": "text", "value": "投简历" },
+      { "strategy": "text", "value": "发送简历" },
+      { "strategy": "text", "value": "立即投递" }
+    ],
+    "form_fields": {
+      "expected_salary": [
+        { "strategy": "css", "value": "input[name*='salary'], input[placeholder*='薪资']" },
+        { "strategy": "text", "value": "期望薪资" }
+      ],
+      "self_intro": [
+        { "strategy": "css", "value": "textarea[name*='intro'], textarea[placeholder*='介绍']" },
+        { "strategy": "text", "value": "自我介绍" }
+      ]
+    },
+    "btn_submit": [
+      { "strategy": "text", "value": "提交" },
+      { "strategy": "text", "value": "确认投递" },
+      { "strategy": "css", "value": "[class*='submit']" }
+    ]
+  },
+  "successIndicators": ["投递成功", "已投递", "发送成功"],
+  "failIndicators": ["请先登录", "需要验证", "投递失败"],
+  "rateLimit": { "maxPerDay": 30, "delayMin": 5, "delayMax": 10 }
+}

@@ -1,0 +1,98 @@
+{
+  "platform": "boss_zhipin",
+  "baseUrl": "https://www.zhipin.com",
+  "cities": {
+    "深圳": "100010000", "广州": "100020000", "北京": "100000000",
+    "上海": "100030000", "杭州": "100080000", "成都": "100270000",
+    "武汉": "100140000", "南京": "100070000", "西安": "100200000",
+    "长沙": "100190000", "苏州": "100110000", "东莞": "100290000",
+    "天津": "100050000", "重庆": "100240000", "厦门": "100170000",
+    "合肥": "100150000", "郑州": "100180000", "青岛": "100090000"
+  },
+  "experience": { "1-3": "102", "3-5": "103", "5-10": "104", "10+": "105" },
+  "education": { "大专": "202", "本科": "203", "硕士": "204", "博士": "205" },
+  "salary": { "3k": "402", "5k": "403", "10k": "404", "15k": "405", "20k": "406", "25k": "407", "30k": "408", "50k": "409" },
+  "verify": {
+    "urlPatterns": ["/passport", "/verify", "/safe/"],
+    "selectors": [".geetest", "[class*='captcha']", "[class*='verify']", ".slider-captcha", ".nc_wrapper"],
+    "textPatterns": ["请登录", "登录后查看", "扫码登录", "安全验证", "滑动验证", "请在手机上确认"]
+  },
+  "search": {
+    "urlTemplate": "https://www.zhipin.com/web/geek/jobs?city={city}&query={keyword}",
+    "elements": {
+      "job_item": [
+        { "strategy": "css", "value": ".job-list-box .job-card" },
+        { "strategy": "css", "value": ".job-card-wrapper" },
+        { "strategy": "css", "value": "[ka='search-job-item']" },
+        { "strategy": "css", "value": "a[href*='/web/geek/job']" }
+      ],
+      "job_title": [
+        { "strategy": "css", "value": ".job-name" },
+        { "strategy": "css", "value": "[class*='job-name']" }
+      ],
+      "company_name": [
+        { "strategy": "css", "value": ".company-name a" },
+        { "strategy": "css", "value": "a[href*='/gongsi/']" }
+      ],
+      "salary": [
+        { "strategy": "css", "value": ".salary" },
+        { "strategy": "css", "value": ".job-limit .red" }
+      ],
+      "next_page": [
+        { "strategy": "css", "value": "a[class*='next']" },
+        { "strategy": "text", "value": "下一页" }
+      ]
+    }
+  },
+  "apply": {
+    "searchPageButtons": {
+      "hover_required": true,
+      "applied_status": ["已沟通", "继续沟通", "已打招呼"],
+      "apply_btn_after_hover": [
+        { "strategy": "css", "value": ".btn-start-chat" },
+        { "strategy": "css", "value": "[class*='start-chat']" },
+        { "strategy": "css", "value": ".btn-greeting" },
+        { "strategy": "css", "value": ".op-btn-chat" },
+        { "strategy": "css", "value": "[class*='btn-start-chat']" },
+        { "strategy": "css", "value": "[class*='op-btn']" },
+        { "strategy": "css", "value": "[class*='greeting-btn']" },
+        { "strategy": "css", "value": "a[class*='start-chat']" },
+        { "strategy": "css", "value": "a[class*='btn-chat']" },
+        { "strategy": "text", "value": "立即沟通" },
+        { "strategy": "text", "value": "继续沟通" }
+      ],
+      "greeting_input": [
+        { "strategy": "css", "value": ".chat-input" },
+        { "strategy": "css", "value": "textarea[class*='input']" },
+        { "strategy": "css", "value": "[class*='greeting'] textarea" }
+      ],
+      "greeting_send": [
+        { "strategy": "text", "value": "发送" },
+        { "strategy": "css", "value": ".btn-send" },
+        { "strategy": "css", "value": "[class*='send-btn']" }
+      ]
+    },
+    "elements": {
+      "apply_btn": [
+        { "strategy": "css", "value": ".btn-start-chat" },
+        { "strategy": "css", "value": ".op-btn-chat" },
+        { "strategy": "css", "value": "a[class*='chat-btn']" },
+        { "strategy": "css", "value": ".btn-greeting" },
+        { "strategy": "css", "value": ".bottom-actions .op-btn" },
+        { "strategy": "css", "value": "[class*='start-chat']" },
+        { "strategy": "css", "value": ".dialog-actions a" },
+        { "strategy": "css", "value": "a.op-btn" },
+        { "strategy": "css", "value": "a[ka*='chat']" },
+        { "strategy": "text", "value": "立即沟通" },
+        { "strategy": "text", "value": "继续沟通" },
+        { "strategy": "text", "value": "投递简历" }
+      ],
+      "greeting_input": { "css": ".chat-input textarea, .chat-input, textarea[class*='input'], textarea[placeholder*='介绍'], .greeting-edit textarea, .dialog-msg textarea" },
+      "greeting_send": { "text": "发送" }
+    },
+    },
+    "successIndicators": ["已发送", "沟通成功", "已打招呼"],
+    "blockIndicators": ["请先登录", "需要验证", "操作频繁", "今日投递已达上限", "Boss限制"]
+  },
+  "rateLimit": { "maxPerDay": 50, "delayMin": 3, "delayMax": 6 }
+}
