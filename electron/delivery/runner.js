@@ -140,7 +140,8 @@ async function _runOnePlatform(platform, filter, resume, onProgress) {
       onProgress({ type: 'delivering', platform, message: `${job.company} - ${job.title}`, current: i + 1, total: targetCount, job });
 
       try {
-        const ok = await adapter.applyOne(win, job, resume);
+        // ★ 直接传索引 i 给 applyOne（job 在列表里是第 i 个，卡片也是第 i 个）
+        const ok = await adapter.applyOne(win, job, resume, i);
         if (ok) {
           result.success++;
           result.appliedJobs.push({ platform, ...job });

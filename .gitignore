@@ -20,8 +20,9 @@ Thumbs.db
 .idea/
 
 # Test outputs
-test-boss.js
-test-boss-detail.js
+test-*.js
+test-*.html
+zhilian-out.txt
 boss_search_debug.json
 diagnose_*.json
 diagnose_latest.txt
