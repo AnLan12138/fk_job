@@ -61,6 +61,25 @@ app.whenReady().then(async () => {
   await initDB();
   createWindow();
 
+  // ★★★ 临时自动触发（上线前删）★★★
+  // DISABLED: 需要用户登录
+  /*
+  setTimeout(async () => {
+    try {
+      const runner = require('./delivery/runner');
+      const db = require('./data/db');
+      const filter = db.loadFilter() || { keywords: ['Java'], cities: ['深圳'], daily_limit: 2, interval_seconds: 5 };
+      const resume = db.loadResume() || { name: '张三', skills: ['Java','Spring'], work_history: [{}] };
+      const result = await runner.start(['liepin'], filter, resume, (p) => {
+        console.log('[liepin progress]', JSON.stringify(p));
+      });
+      console.log('[liepin result]', JSON.stringify(result));
+    } catch (e) {
+      console.error('[liepin auto error]', e.message);
+    }
+  }, 6000);
+  */
+
   // ★★★ 临时诊断钩子（上线前删）：启动 8 秒后自动诊断 boss ★★★
   // DISABLED: 需要先登录 boss
   /*
